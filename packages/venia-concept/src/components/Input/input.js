@@ -35,7 +35,7 @@ class Input extends Component {
         helpText: PropTypes.string,
         helpType: PropTypes.string,
         field: PropTypes.string.isRequired,
-        onChange: PropTypes.func.isRequired
+        onChange: PropTypes.func
     };
 
     static defaultProps = {
@@ -43,11 +43,6 @@ class Input extends Component {
         helpVisible: true,
         helpType: HelpTypes.hint
     };
-
-    componentDidMount() {
-        const { initialValue, onChange } = this.props;
-        initialValue && onChange(initialValue);
-    }
 
     state = {
         value: this.props.initialValue,

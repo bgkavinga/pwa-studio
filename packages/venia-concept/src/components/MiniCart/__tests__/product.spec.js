@@ -1,10 +1,13 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 
 import Product from '../product';
 import Section from '../section';
 
-const classes = { firstSection: 'a', optionLabel: 'b', name: 'c' };
+configure({ adapter: new Adapter() });
+
+const classes = { firstSection: 'a' };
 
 const item = {
     item_id: 1,
@@ -12,17 +15,7 @@ const item = {
     price: 10,
     qty: 1,
     sku: 'TEST1',
-    image: 'test.jpg',
-    options: [
-        {
-            label: 'testLabel',
-            value: 'testValue'
-        },
-        {
-            label: 'testLabel2',
-            value: 'testValue2'
-        }
-    ]
+    image: 'test.jpg'
 };
 
 test('passed functions are called from nested `Section` components', () => {
@@ -53,28 +46,4 @@ test('passed functions are called from nested `Section` components', () => {
     expect(favoriteItem).toHaveBeenCalled();
     expect(editItem).toHaveBeenCalled();
     expect(removeItem).toHaveBeenCalled();
-});
-
-test('Product name is rendered', () => {
-    const wrapper = shallow(
-        <Product item={item} currencyCode={'EUR'} classes={classes} />
-    ).dive();
-
-    expect(
-        wrapper
-            .find(`.${classes.name}`)
-            .at(0)
-            .text()
-    ).toContain(item.name);
-});
-
-test('Product variants are rendered', () => {
-    const wrapper = shallow(
-        <Product item={item} currencyCode={'EUR'} classes={classes} />
-    ).dive();
-
-    wrapper.find(`.${classes.optionLabel}`).forEach((optionLabel, i) => {
-        expect(optionLabel.text()).toContain(item.options[i].label);
-        expect(optionLabel.text()).toContain(item.options[i].value);
-    });
 });

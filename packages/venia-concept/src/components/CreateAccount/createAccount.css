@@ -1,18 +1,10 @@
-.root {
-    display: grid;
-    gap: 0.5rem;
-    justify-items: stretch;
-    padding: 0 1.5rem;
+.createAccountButton {
+    text-align: center;
+    margin-top: 2em;
 }
 
-.actions {
-    display: grid;
-    justify-items: center;
-    margin-top: 1rem;
-    padding: 1rem 0;
-}
-
-.lead {
-    margin: 1rem 0;
+.rewards {
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
     text-align: center;
 }

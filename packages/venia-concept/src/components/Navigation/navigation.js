@@ -4,20 +4,19 @@ import { bool, func, object, shape, string } from 'prop-types';
 import classify from 'src/classify';
 import Button from 'src/components/Button';
 import CreateAccount from 'src/components/CreateAccount';
+import Icon from 'src/components/Icon';
 import SignIn from 'src/components/SignIn';
-import ForgotPassword from 'src/components/ForgotPassword';
 import CategoryTree from './categoryTree';
 import NavHeader from './navHeader';
 import defaultClasses from './navigation.css';
-import { MyAccountMenuTrigger } from '../MyAccountMenuPage';
 
 class Navigation extends PureComponent {
     static propTypes = {
         classes: shape({
             authBar: string,
             body: string,
-            form_closed: string,
-            form_open: string,
+            createAccount_closed: string,
+            createAccount_open: string,
             footer: string,
             header: string,
             open: string,
@@ -35,7 +34,6 @@ class Navigation extends PureComponent {
         }),
         firstname: string,
         getAllCategories: func.isRequired,
-        getUserDetails: func.isRequired,
         email: string,
         isOpen: bool,
         isSignedIn: bool,
@@ -55,44 +53,52 @@ class Navigation extends PureComponent {
     }
 
     componentDidMount() {
-        this.props.getUserDetails();
         this.props.getAllCategories();
     }
 
     state = {
         isCreateAccountOpen: false,
         isSignInOpen: false,
-        isForgotPasswordOpen: false,
-        rootNodeId: null,
-        currentPath: null
+        rootNodeId: null
     };
 
     get categoryTree() {
-        const { props, setCurrentPath, state } = this;
+        const { props, setRootNodeId, state } = this;
         const { rootNodeId } = state;
-        const { closeDrawer } = props;
+        const { categories, closeDrawer } = props;
 
         return rootNodeId ? (
             <CategoryTree
-                rootNodeId={props.rootCategoryId}
-                currentId={rootNodeId}
-                updateRootNodeId={setCurrentPath}
+                nodes={categories}
+                rootNodeId={rootNodeId}
                 onNavigate={closeDrawer}
+                updateRootNodeId={setRootNodeId}
             />
         ) : null;
     }
 
     get footer() {
-        const { classes } = this.props;
+        const { classes, firstname, lastname, email } = this.props;
 
         return !this.props.isSignedIn ? (
             <div className={classes.authBar}>
-                <Button priority="high" onClick={this.showSignInForm}>
-                    Sign In
-                </Button>
+                <Button onClick={this.showSignInForm}>Sign In</Button>
             </div>
         ) : (
-            <MyAccountMenuTrigger />
+            <div className={classes.userChip}>
+                <div className={classes.userAvatar}>
+                    <Icon name="user" />
+                </div>
+                <div className={classes.userInfo}>
+                    <p className={classes.userName}>
+                        {`${firstname} ${lastname}`}
+                    </p>
+                    <p className={classes.userEmail}>{email}</p>
+                </div>
+                <button className={classes.userMore}>
+                    <Icon name="chevron-up" />
+                </button>
+            </div>
         );
     }
 
@@ -107,7 +113,6 @@ class Navigation extends PureComponent {
                 <SignIn
                     showCreateAccountForm={this.setCreateAccountForm}
                     setDefaultUsername={this.setDefaultUsername}
-                    onForgotPassword={this.setForgotPasswordForm}
                 />
             </div>
         );
@@ -127,8 +132,7 @@ class Navigation extends PureComponent {
             return (
                 <div className={className}>
                     <CreateAccount
-                        onSubmit={this.props.createAccount}
-                        initialValues={{ email: this.state.defaultUsername }}
+                        defaultUsername={this.state.defaultUsername}
                     />
                 </div>
             );
@@ -136,49 +140,15 @@ class Navigation extends PureComponent {
         this.showCreateAccountForm();
     };
 
-    forgotPassword = () => {};
-
-    /*
-     * When the ForgotPassword component is mounted, its email input will be set to
-     * the value of the SignIn component's email input.
-     * Our common Input component handles initialValue only when component is mounted.
-     */
-    setForgotPasswordForm = () => {
-        this.forgotPassword = className => {
-            return (
-                <div className={className}>
-                    <ForgotPassword
-                        initialValues={{ email: this.state.defaultUsername }}
-                        onClose={this.closeForgotPassword}
-                    />
-                </div>
-            );
-        };
-        this.showForgotPasswordForm();
-    };
-
-    closeForgotPassword = () => {
-        this.props.closeDrawer();
-        this.hideForgotPasswordForm();
-        this.hideSignInForm();
-    };
-
     get createAccountForm() {
         const { isCreateAccountOpen } = this.state;
         const { classes, isSignedIn } = this.props;
         const isOpen = !isSignedIn && isCreateAccountOpen;
-        const className = isOpen ? classes.form_open : classes.form_closed;
+        const className = isOpen
+            ? classes.createAccount_open
+            : classes.createAccount_closed;
 
         return this.createAccount(className);
-    }
-
-    get forgotPasswordForm() {
-        const { isForgotPasswordOpen } = this.state;
-        const { classes, isSignedIn } = this.props;
-        const isOpen = !isSignedIn && isForgotPasswordOpen;
-        const className = isOpen ? classes.form_open : classes.form_closed;
-
-        return this.forgotPassword(className);
     }
 
     showSignInForm = () => {
@@ -203,43 +173,21 @@ class Navigation extends PureComponent {
         }));
     };
 
-    showForgotPasswordForm = () => {
-        this.setState(() => ({
-            isForgotPasswordOpen: true
-        }));
-    };
-
     hideCreateAccountForm = () => {
         this.setState(() => ({
             isCreateAccountOpen: false
         }));
     };
 
-    hideForgotPasswordForm = () => {
-        this.setState(() => ({
-            isForgotPasswordOpen: false
-        }));
-    };
-
-    setCurrentPath = currentPath => {
-        const path = currentPath.split('/').reverse();
-        const rootNodeId = parseInt(path[0]);
-
-        this.setState(() => ({
-            rootNodeId: rootNodeId,
-            currentPath: path
-        }));
+    setRootNodeId = rootNodeId => {
+        this.setState(() => ({ rootNodeId }));
     };
 
     setRootNodeIdToParent = () => {
-        const path = this.state.currentPath;
-        const parentId =
-            path.length > 1 ? parseInt(path[1]) : this.props.rootCategoryId;
-        path.shift();
+        const { categories } = this.props;
 
-        this.setState(() => ({
-            rootNodeId: parentId,
-            currentPath: path
+        this.setState(({ rootNodeId }) => ({
+            rootNodeId: categories[rootNodeId].parentId
         }));
     };
 
@@ -252,47 +200,28 @@ class Navigation extends PureComponent {
             hideSignInForm,
             setRootNodeIdToParent,
             signInForm,
-            forgotPasswordForm,
-            hideForgotPasswordForm,
             props,
             state
         } = this;
 
-        const {
-            isCreateAccountOpen,
-            isSignInOpen,
-            isForgotPasswordOpen,
-            rootNodeId
-        } = state;
-        const {
-            classes,
-            closeDrawer,
-            isOpen,
-            isSignedIn,
-            rootCategoryId
-        } = props;
+        const { isCreateAccountOpen, isSignInOpen, rootNodeId } = state;
+        const { classes, closeDrawer, isOpen, rootCategoryId } = props;
         const className = isOpen ? classes.root_open : classes.root;
         const isTopLevel = !rootNodeId || rootNodeId === rootCategoryId;
 
-        const handleBack =
-            isCreateAccountOpen && !isSignedIn
-                ? hideCreateAccountForm
-                : isForgotPasswordOpen
-                ? hideForgotPasswordForm
-                : isSignInOpen && !isSignedIn
-                ? hideSignInForm
-                : isTopLevel
-                ? closeDrawer
-                : setRootNodeIdToParent;
+        const handleBack = isCreateAccountOpen
+            ? hideCreateAccountForm
+            : isSignInOpen
+            ? hideSignInForm
+            : isTopLevel
+            ? closeDrawer
+            : setRootNodeIdToParent;
 
-        const title =
-            isCreateAccountOpen && !isSignedIn
-                ? 'Create Account'
-                : isForgotPasswordOpen
-                ? 'Forgot password'
-                : isSignInOpen && !isSignedIn
-                ? 'Sign In'
-                : 'Main Menu';
+        const title = isCreateAccountOpen
+            ? 'Create Account'
+            : isSignInOpen
+            ? 'Sign In'
+            : 'Main Menu';
 
         return (
             <aside className={className}>
@@ -307,7 +236,6 @@ class Navigation extends PureComponent {
                 <div className={classes.footer}>{footer}</div>
                 {signInForm}
                 {createAccountForm}
-                {forgotPasswordForm}
             </aside>
         );
     }

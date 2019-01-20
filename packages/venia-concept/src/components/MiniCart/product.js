@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { arrayOf, number, shape, string } from 'prop-types';
+import { number, shape, string } from 'prop-types';
 import { Price } from '@magento/peregrine';
 import Kebab from './kebab';
 import Section from './section';
@@ -15,26 +15,19 @@ class Product extends Component {
     static propTypes = {
         classes: shape({
             image: string,
-            modal: string,
             name: string,
-            optionLabel: string,
+            optionName: string,
+            optionValue: string,
             options: string,
             price: string,
             quantity: string,
             quantityOperator: string,
-            quantityRow: string,
             quantitySelect: string,
             root: string
         }),
         item: shape({
             item_id: number.isRequired,
             name: string.isRequired,
-            options: arrayOf(
-                shape({
-                    label: string,
-                    value: string
-                })
-            ),
             price: number.isRequired,
             product_type: string,
             qty: number.isRequired,
@@ -55,36 +48,29 @@ class Product extends Component {
 
     get options() {
         const { classes, item } = this.props;
-        const options = item.options;
 
-        return options && options.length > 0 ? (
-            <dl className={classes.options}>
-                {options.map(({ label, value }) => (
-                    <Fragment key={`${label}${value}`}>
-                        <dt className={classes.optionLabel}>
-                            {label} : {value}
-                        </dt>
+        return item.options && item.options.length > 0 ? (
+            <dl className={this.props.classes.options}>
+                {item.options.map(({ name, value }) => (
+                    <Fragment key={name}>
+                        <dt className={classes.optionName}>{name}</dt>
+                        <dd className={classes.optionValue}>{value}</dd>
                     </Fragment>
                 ))}
             </dl>
         ) : null;
     }
 
-    get modal() {
-        const { classes } = this.props;
-        return this.state.isOpen ? <div className={classes.modal} /> : null;
-    }
-
     styleImage(image) {
         return {
-            minHeight: imageHeight, // min-height instead of height so image will always align with grid bottom
+            height: imageHeight,
             width: imageWidth,
             backgroundImage: `url(${makeProductMediaPath(image.file)})`
         };
     }
 
     render() {
-        const { options, props, modal } = this;
+        const { options, props } = this;
         const { classes, item, currencyCode } = props;
         const rootClasses = this.state.isOpen
             ? classes.root + ' ' + classes.root_masked
@@ -100,29 +86,28 @@ class Product extends Component {
                 <div className={classes.name}>{item.name}</div>
                 {options}
                 <div className={classes.quantity}>
-                    <div className={classes.quantityRow}>
-                        <select
-                            className={classes.quantitySelect}
-                            value={item.qty}
-                            readOnly
-                        >
-                            <option value={item.qty}>{item.qty}</option>
-                        </select>
-                        <span className={classes.quantityOperator}>{'×'}</span>
-                        <span className={classes.price}>
-                            <Price
-                                currencyCode={currencyCode}
-                                value={item.price}
-                            />
-                        </span>
-                    </div>
+                    <select
+                        className={classes.quantitySelect}
+                        value={item.qty}
+                        readOnly
+                    >
+                        <option value={item.qty}>{item.qty}</option>
+                    </select>
+                    <span className={classes.quantityOperator}>{'×'}</span>
+                    <span className={classes.price}>
+                        <Price currencyCode={currencyCode} value={item.price} />
+                    </span>
                 </div>
-                {modal}
-                <Kebab>
+                <div className={this.state.isOpen ? classes.modal : ''} />
+                <Kebab
+                    onFocus={this.openDropdown}
+                    onBlur={this.closeDropdown}
+                    isOpen={this.state.isOpen}
+                >
                     <Section
                         text="Add to favorites"
                         onClick={this.favoriteItem}
-                        icon="Heart"
+                        icon="heart"
                         iconAttributes={
                             this.state.isFavorite ? favoritesFill : ''
                         }
@@ -130,17 +115,29 @@ class Product extends Component {
                     <Section
                         text="Edit item"
                         onClick={this.editItem}
-                        icon="Edit2"
+                        icon="edit-2"
                     />
                     <Section
                         text="Remove item"
                         onClick={this.removeItem}
-                        icon="Trash"
+                        icon="trash"
                     />
                 </Kebab>
             </li>
         );
     }
+
+    openDropdown = () => {
+        this.setState({
+            isOpen: true
+        });
+    };
+
+    closeDropdown = () => {
+        this.setState({
+            isOpen: false
+        });
+    };
 
     favoriteItem = () => {
         this.setState({

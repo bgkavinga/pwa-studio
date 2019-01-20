@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 
-import getDisplayName from 'src/util/getDisplayName';
-
 const merge = (...args) => Object.assign({}, ...args);
 
 const classify = defaultClasses => WrappedComponent =>
     class extends Component {
-        static displayName = `Classify(${getDisplayName(WrappedComponent)})`;
+        static displayName = `Classify(${WrappedComponent.displayName})`;
 
         render() {
             const { className, classes, ...restProps } = this.props;

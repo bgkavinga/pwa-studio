@@ -1,28 +1,38 @@
 import React, { Component } from 'react';
-import { func, shape, string } from 'prop-types';
+import { arrayOf, func, number, objectOf, shape, string } from 'prop-types';
 
 import classify from 'src/classify';
 import defaultClasses from './categoryLeaf.css';
 
 class Branch extends Component {
     static propTypes = {
+        children: func,
         classes: shape({
             root: string,
             text: string
         }),
-        name: string.isRequired,
-        path: string.isRequired,
+        nodeId: number.isRequired,
+        nodes: objectOf(
+            shape({
+                childrenData: arrayOf(number).isRequired,
+                id: number.isRequired,
+                name: string.isRequired,
+                urlPath: string
+            })
+        ),
         onDive: func.isRequired
     };
 
     handleClick = () => {
-        const { path, onDive } = this.props;
-        onDive(path);
+        const { nodeId, onDive } = this.props;
+
+        onDive(nodeId);
     };
 
     render() {
-        const { classes, name } = this.props;
-        const text = name;
+        const { children, classes, nodeId, nodes } = this.props;
+        const node = nodes[nodeId];
+        const text = children ? children({ node }) : node.name;
 
         return (
             <button className={classes.root} onClick={this.handleClick}>

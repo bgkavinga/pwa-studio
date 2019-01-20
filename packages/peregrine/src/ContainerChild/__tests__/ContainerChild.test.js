@@ -1,6 +1,9 @@
 import React from 'react';
 import ContainerChild from '..';
-import { shallow } from 'enzyme';
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+
+configure({ adapter: new Adapter() });
 
 test('Renders content from render prop', () => {
     const wrapper = shallow(

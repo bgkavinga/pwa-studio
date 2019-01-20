@@ -5,8 +5,7 @@ const prefix = 'USER';
 const actionMap = {
     SIGN_IN: {
         REQUEST: null,
-        RECEIVE: null,
-        RESET: null
+        RECEIVE: null
     },
     RESET_SIGN_IN_ERROR: {
         REQUEST: null,

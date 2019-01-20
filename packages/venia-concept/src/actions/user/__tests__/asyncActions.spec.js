@@ -11,7 +11,6 @@ import {
     signIn,
     getUserDetails,
     createAccount,
-    createNewUserRequest,
     assignGuestCartToCustomer
 } from '../asyncActions';
 
@@ -61,10 +60,6 @@ test('getUserDetails() returns a thunk', () => {
 
 test('createAccount() returns a thunk', () => {
     expect(createAccount()).toBeInstanceOf(Function);
-});
-
-test('createNewUserRequest() returns a thunk', () => {
-    expect(createNewUserRequest()).toBeInstanceOf(Function);
 });
 
 test('assignGuestCartToCustomer() returns a thunk', () => {
@@ -136,57 +131,30 @@ test('getUserDetails thunk makes request to get customer details if user is sign
     expect(firstRequest[1]).toHaveProperty('method', 'GET');
 });
 
-test('getUserDetails thunk dispatches resetSignInError', async () => {
-    getState.mockImplementationOnce(() => ({
-        user: { isSignedIn: true }
-    }));
-
-    await getUserDetails()(...thunkArgs);
-
-    expect(dispatch).toHaveBeenCalledWith(actions.resetSignInError.request());
-});
-
-test('getUserDetails thunk dispatches signInError on failed request', async () => {
-    const error = new Error('ERROR');
-    getState.mockImplementationOnce(() => ({
-        user: { isSignedIn: true }
-    }));
-    request.mockRejectedValueOnce(error);
-    await getUserDetails()(...thunkArgs);
-    expect(dispatch).toHaveBeenNthCalledWith(
-        2,
-        actions.signInError.receive(error)
-    );
-});
-
-test('createNewUserRequest thunk dispatches resetCreateAccountError', async () => {
-    await createNewUserRequest(accountInfo)(...thunkArgs);
+test('createAccount thunk dispatches resetCreateAccountError', async () => {
+    await createAccount(accountInfo)(...thunkArgs);
 
     expect(dispatch).toHaveBeenCalledWith(
         actions.resetCreateAccountError.request()
     );
 });
 
-test('createNewUserRequest thunk dispatches signIn', async () => {
-    await createNewUserRequest(accountInfo)(...thunkArgs);
+test('createAccount thunk dispatches signIn', async () => {
+    await createAccount(accountInfo)(...thunkArgs);
 
     expect(dispatch).toHaveBeenNthCalledWith(2, expect.any(Function));
 });
 
-test('createNewUserRequest thunk dispatches assignGuestCartToCustomer', async () => {
-    await createNewUserRequest(accountInfo)(...thunkArgs);
+test('createAccount thunk dispatches assignGuestCartToCustomer', async () => {
+    await createAccount(accountInfo)(...thunkArgs);
 
     expect(dispatch).toHaveBeenNthCalledWith(3, expect.any(Function));
 });
 
-test('createNewUserRequest thunk dispatches createAccountError on invalid account info', async () => {
+test('createAccount thunk dispatches createAccountError on invalid account info', async () => {
     const error = new TypeError('ERROR');
     request.mockRejectedValueOnce(error);
-
-    try {
-        await createNewUserRequest({})(...thunkArgs);
-    } catch (e) {}
-
+    await createAccount({})(...thunkArgs);
     expect(dispatch).toHaveBeenNthCalledWith(
         2,
         actions.createAccountError.receive(error)

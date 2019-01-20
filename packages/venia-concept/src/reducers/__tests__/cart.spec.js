@@ -1,4 +1,4 @@
-import cartReducers, { initialState } from 'src/reducers/cart';
+import cartReducers from 'src/reducers/cart';
 import actions from 'src/actions/cart';
 import checkoutActions from 'src/actions/checkout';
 
@@ -24,7 +24,11 @@ test('getGuestCart.receive: restores initial state on error', () => {
                 error: true
             }
         )
-    ).toEqual(initialState);
+    ).toEqual({
+        details: {},
+        guestCartId: null,
+        totals: {}
+    });
 });
 
 test('getGuestCart.receive: adds guestCartId to state', () => {
@@ -79,5 +83,9 @@ test('checkoutActions.order.accept: cart resets to initial state', () => {
             { guestCartId: 'SOME_CART', details: { items: ['done'] } },
             { type: checkoutActions.order.accept }
         )
-    ).toEqual(initialState);
+    ).toEqual({
+        details: {},
+        guestCartId: null,
+        totals: {}
+    });
 });

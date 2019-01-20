@@ -1,7 +1,10 @@
 import React, { Fragment } from 'react';
-import { shallow } from 'enzyme';
+import { configure, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 
 import { Items } from '..';
+
+configure({ adapter: new Adapter() });
 
 const items = [
     {
@@ -83,7 +86,6 @@ test('passes correct props to each child', () => {
         expect(node.key()).toEqual(key);
         expect(node.props()).toMatchObject({
             item,
-            itemIndex: i,
             render: props.renderItem,
             hasFocus: false,
             isSelected: false,

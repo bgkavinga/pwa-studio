@@ -1,61 +1,53 @@
-import React, { Component, Fragment } from 'react';
-import { arrayOf, node, number, oneOfType, shape, string } from 'prop-types';
-import { BasicSelect, Option, asField } from 'informed';
-import { compose } from 'redux';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { List } from '@magento/peregrine';
 
 import classify from 'src/classify';
-import { FieldIcons, Message } from 'src/components/Field';
+import Option from './option';
 import defaultClasses from './select.css';
 
-import Icon from 'src/components/Icon';
-import ChevronDownIcon from 'react-feather/dist/icons/chevron-down';
-
-const arrow = <Icon src={ChevronDownIcon} size={18} />;
+const noop = () => {};
+const getItemKey = ({ value }) => value;
 
 class Select extends Component {
     static propTypes = {
-        classes: shape({
-            input: string
+        classes: PropTypes.shape({
+            root: PropTypes.string
         }),
-        field: string.isRequired,
-        fieldState: shape({
-            value: oneOfType([number, string])
-        }),
-        items: arrayOf(
-            shape({
-                label: string,
-                value: oneOfType([number, string])
-            })
-        ),
-        message: node
+        items: PropTypes.arrayOf(PropTypes.object),
+        onChange: PropTypes.func
+    };
+
+    state = {
+        value: ''
     };
 
     render() {
-        const { classes, fieldState, items, message, ...rest } = this.props;
-        const options = items.map(({ label, value }) => (
-            <Option key={value} value={value}>
-                {label || (value != null ? value : '')}
-            </Option>
-        ));
+        const { props, state } = this;
+        const isControlled = !!props.onChange;
+        const { value } = isControlled ? props : state;
 
         return (
-            <Fragment>
-                <FieldIcons after={arrow}>
-                    <BasicSelect
-                        {...rest}
-                        fieldState={fieldState}
-                        className={classes.input}
-                    >
-                        {options}
-                    </BasicSelect>
-                </FieldIcons>
-                <Message fieldState={fieldState}>{message}</Message>
-            </Fragment>
+            <List
+                {...props}
+                render="select"
+                renderItem={Option}
+                getItemKey={getItemKey}
+                value={value}
+                onChange={this.handleChange}
+            />
         );
+    }
+
+    handleChange = event => {
+        this.setValue(event.target.value);
+    };
+
+    setValue(value) {
+        const onChange = this.props.onChange || noop;
+
+        this.setState(() => ({ value }), () => onChange(value));
     }
 }
 
-export default compose(
-    classify(defaultClasses),
-    asField
-)(Select);
+export default classify(defaultClasses)(Select);

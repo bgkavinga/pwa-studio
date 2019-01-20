@@ -4,8 +4,7 @@
     bottom: 0;
     box-shadow: -1px 0 rgb(var(--venia-border));
     display: grid;
-    grid-template-rows: min-content 1fr;
-    height: 100vh;
+    grid-template-rows: min-content 1fr auto auto;
     opacity: 0;
     overflow: hidden;
     position: fixed;
@@ -43,6 +42,7 @@
 
 .footer {
     box-shadow: 0 -1px rgb(var(--venia-border));
+    margin: 0 1.5rem;
     padding: 1.5rem 0 0.5rem;
 }
 
@@ -107,9 +107,4 @@
 .subtotalValue {
     font-weight: 600;
     margin-left: 0.5rem;
-}
-
-.placeholderButton {
-    text-align: center;
-    margin: 1.5rem 0 1rem 0;
 }

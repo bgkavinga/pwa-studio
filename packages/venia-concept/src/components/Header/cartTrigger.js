@@ -20,11 +20,7 @@ class Trigger extends Component {
         const { children, classes, toggleCart } = this.props;
 
         return (
-            <button
-                className={classes.root}
-                aria-label="Toggle mini cart"
-                onClick={toggleCart}
-            >
+            <button className={classes.root} onClick={toggleCart}>
                 {children}
             </button>
         );

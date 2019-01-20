@@ -9,15 +9,6 @@
     composes: footer from './flow.css';
 }
 
-.informationPrompt {
-    color: rgb(var(--venia-orange));
-    text-transform: capitalize;
-}
-.informationPrompt--disabled {
-    color: rgb(var(--venia-text-hint));
-    text-transform: capitalize;
-}
-
 @keyframes enter {
     from {
         opacity: 0;

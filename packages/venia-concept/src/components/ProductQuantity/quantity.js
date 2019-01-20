@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, number, shape, string } from 'prop-types';
+import PropTypes from 'prop-types';
 
 import classify from 'src/classify';
 import Select from 'src/components/Select';
@@ -8,30 +8,24 @@ import defaultClasses from './quantity.css';
 
 class Quantity extends Component {
     static propTypes = {
-        classes: shape({
-            root: string
+        classes: PropTypes.shape({
+            root: PropTypes.string
         }),
-        items: arrayOf(
-            shape({
-                value: number
-            })
-        )
+        value: PropTypes.number.isRequired,
+        onChange: PropTypes.func.isRequired
     };
 
-    static defaultProps = {
-        selectLabel: "product's quantity"
-    };
+    handleChange = value => this.props.onChange(Number(value));
 
     render() {
-        const { classes, selectLabel, ...restProps } = this.props;
+        const { classes, value } = this.props;
 
         return (
             <div className={classes.root}>
                 <Select
-                    {...restProps}
-                    field="quantity"
-                    aria-label={selectLabel}
                     items={mockData}
+                    value={value}
+                    onChange={this.handleChange}
                 />
             </div>
         );

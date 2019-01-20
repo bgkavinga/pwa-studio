@@ -1,6 +1,5 @@
 .root {
     display: block;
-    width: 100%;
 }
 .root:focus {
     background-image: radial-gradient(circle, rgb(var(--venia-grey)), white);
@@ -11,9 +10,7 @@
     align-items: center;
     border-bottom: 1px solid rgb(var(--venia-border));
     display: grid;
-    gap: 1rem;
-    grid-auto-flow: column;
-    grid-template-columns: 5rem 1fr 2rem;
+    grid-template-columns: 6rem 1fr;
     justify-items: start;
     margin: 0 1.5rem;
     min-height: 4.5rem;
@@ -34,8 +31,4 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.icon {
-    justify-self: center;
 }

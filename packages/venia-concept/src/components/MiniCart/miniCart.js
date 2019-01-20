@@ -1,37 +1,29 @@
-import React, { Component, Fragment, Suspense } from 'react';
+import React, { Component, Fragment } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { bool, object, shape, string } from 'prop-types';
-
+import { shape, string, bool } from 'prop-types';
 import { Price } from '@magento/peregrine';
+
 import classify from 'src/classify';
 import { getCartDetails, removeItemFromCart } from 'src/actions/cart';
 import Icon from 'src/components/Icon';
-import CloseIcon from 'react-feather/dist/icons/x';
 import Button from 'src/components/Button';
-import CheckoutButton from 'src/components/Checkout/checkoutButton';
 import EmptyMiniCart from './emptyMiniCart';
 import ProductList from './productList';
 import Trigger from './trigger';
 import defaultClasses from './miniCart.css';
 import { isEmptyCartVisible } from 'src/selectors/cart';
 
-const Checkout = React.lazy(() => import('src/components/Checkout'));
+let Checkout = () => null;
 
 class MiniCart extends Component {
     static propTypes = {
-        cart: shape({
-            details: object,
-            guestCartId: string,
-            totals: object
-        }),
         classes: shape({
             body: string,
-            footer: string,
             header: string,
-            placeholderButton: string,
-            root_open: string,
+            footer: string,
             root: string,
+            root_open: string,
             subtotalLabel: string,
             subtotalValue: string,
             summary: string,
@@ -51,45 +43,32 @@ class MiniCart extends Component {
 
     async componentDidMount() {
         const { getCartDetails } = this.props;
+
         await getCartDetails();
-    }
 
-    get cartId() {
-        const { cart } = this.props;
-
-        return cart && cart.details && cart.details.id;
-    }
-
-    get cartCurrencyCode() {
-        const { cart } = this.props;
-
-        return (
-            cart &&
-            cart.details &&
-            cart.details.currency &&
-            cart.details.currency.quote_currency_code
-        );
+        const CheckoutModule = await import('src/components/Checkout');
+        Checkout = CheckoutModule.default;
     }
 
     get productList() {
-        const { cart, removeItemFromCart } = this.props;
-
-        const { cartCurrencyCode, cartId } = this;
-
+        const {
+            cartId,
+            cartCurrencyCode,
+            cart,
+            removeItemFromCart
+        } = this.props;
         return cartId ? (
             <ProductList
                 removeItemFromCart={removeItemFromCart}
                 showEditPanel={this.showEditPanel}
                 currencyCode={cartCurrencyCode}
                 items={cart.details.items}
-                totalsItems={cart.totals.items}
             />
         ) : null;
     }
 
     get totalsSummary() {
-        const { cart, classes } = this.props;
-        const { cartCurrencyCode, cartId } = this;
+        const { cartId, cartCurrencyCode, cart, classes } = this.props;
         const hasSubtotal = cartId && cart.totals && 'subtotal' in cart.totals;
 
         return hasSubtotal ? (
@@ -110,25 +89,14 @@ class MiniCart extends Component {
         ) : null;
     }
 
-    get placeholderButton() {
-        const { classes } = this.props;
-        return (
-            <div className={classes.placeholderButton}>
-                <CheckoutButton ready={false} />
-            </div>
-        );
-    }
-
     get checkout() {
-        const { props, totalsSummary, placeholderButton } = this;
+        const { props, totalsSummary } = this;
         const { classes, cart } = props;
 
         return (
             <div>
                 <div className={classes.summary}>{totalsSummary}</div>
-                <Suspense fallback={placeholderButton}>
-                    <Checkout cart={cart} />
-                </Suspense>
+                <Checkout cart={cart} />
             </div>
         );
     }
@@ -160,7 +128,7 @@ class MiniCart extends Component {
         return (
             <div className={classes.save}>
                 <Button onClick={this.hideEditPanel}>Cancel</Button>
-                <Button priority="high">Update Cart</Button>
+                <Button>Update Cart</Button>
             </div>
         );
     }
@@ -224,7 +192,7 @@ class MiniCart extends Component {
                         <span>{title}</span>
                     </h2>
                     <Trigger>
-                        <Icon src={CloseIcon} />
+                        <Icon name="x" />
                     </Trigger>
                 </div>
                 {miniCartInner}
@@ -235,9 +203,15 @@ class MiniCart extends Component {
 
 const mapStateToProps = state => {
     const { cart } = state;
+    const details = cart && cart.details;
+    const cartId = details && details.id;
+    const cartCurrencyCode =
+        details && details.currency && details.currency.quote_currency_code;
 
     return {
         cart,
+        cartId,
+        cartCurrencyCode,
         isCartEmpty: isEmptyCartVisible(state)
     };
 };

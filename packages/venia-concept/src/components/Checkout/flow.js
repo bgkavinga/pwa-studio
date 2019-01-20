@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { array, bool, func, object, shape, string } from 'prop-types';
+import { bool, func, object, shape, string } from 'prop-types';
 
 import classify from 'src/classify';
 import Cart from './cart';
@@ -13,20 +13,18 @@ const stepMap = {
     receipt: 3
 };
 
+const isCartReady = items => items > 0;
+const isAddressValid = address => !!(address && address.email);
+
 class Flow extends Component {
     static propTypes = {
         actions: shape({
             beginCheckout: func.isRequired,
             editOrder: func.isRequired,
-            getShippingMethods: func.isRequired,
             resetCheckout: func.isRequired,
-            submitAddress: func.isRequired,
-            submitOrder: func.isRequired,
-            submitPaymentMethod: func.isRequired,
-            submitShippingMethod: func.isRequired
+            submitInput: func.isRequired,
+            submitOrder: func.isRequired
         }).isRequired,
-        availablePaymentMethods: array,
-        availableShippingMethods: array,
         cart: shape({
             details: object,
             guestCartId: string,
@@ -34,103 +32,42 @@ class Flow extends Component {
         }),
         checkout: shape({
             editing: string,
-            incorrectAddressMessage: string,
-            isAddressIncorrect: bool,
             step: string,
             submitting: bool
         }),
         classes: shape({
             root: string
-        }),
-        isCartReady: bool,
-        isCheckoutReady: bool,
-        isPaymentMethodReady: bool,
-        isShippingInformationReady: bool,
-        isShippingMethodReady: bool,
-        paymentMethod: string,
-        paymentTitle: string,
-        shippingMethod: string,
-        shippingTitle: string
+        })
     };
 
     get child() {
-        const {
-            actions,
-            availablePaymentMethods,
-            availableShippingMethods,
-            cart,
-            checkout,
-            isCartReady,
-            isCheckoutReady,
-            isPaymentMethodReady,
-            isShippingInformationReady,
-            isShippingMethodReady,
-            paymentMethod,
-            paymentTitle,
-            shippingMethod,
-            shippingTitle
-        } = this.props;
-
-        const {
-            beginCheckout,
-            editOrder,
-            getShippingMethods,
-            submitAddress,
-            submitOrder,
-            submitPaymentMethod,
-            submitShippingMethod
-        } = actions;
-
-        const {
-            editing,
-            step,
-            submitting,
-            isAddressIncorrect,
-            incorrectAddressMessage
-        } = checkout;
+        const { actions, cart, checkout } = this.props;
+        const { beginCheckout, editOrder, submitInput, submitOrder } = actions;
+        const { editing, step, submitting } = checkout;
+        const { details } = cart;
+        const ready = isCartReady(details.items_count);
+        const valid = isAddressValid(details.billing_address);
 
         switch (stepMap[step]) {
-            case stepMap.cart: {
-                const stepProps = {
-                    beginCheckout,
-                    ready: isCartReady,
-                    submitting
-                };
+            case 1: {
+                const stepProps = { beginCheckout, ready, submitting };
 
                 return <Cart {...stepProps} />;
             }
-            case stepMap.form: {
+            case 2: {
                 const stepProps = {
-                    availablePaymentMethods,
-                    availableShippingMethods,
                     cart,
                     editOrder,
                     editing,
-                    getShippingMethods,
-                    ready: isCheckoutReady,
-                    isPaymentMethodReady,
-                    isShippingInformationReady,
-                    isShippingMethodReady,
-                    paymentMethod,
-                    paymentTitle,
-                    shippingMethod,
-                    shippingTitle,
-                    submitAddress,
+                    submitInput,
                     submitOrder,
-                    submitPaymentMethod,
-                    submitShippingMethod,
-                    submitting
+                    submitting,
+                    valid
                 };
 
-                const formProps = {
-                    ...stepProps,
-                    incorrectAddressMessage,
-                    isAddressIncorrect
-                };
-
-                return <Form {...formProps} />;
+                return <Form {...stepProps} />;
             }
-            case stepMap.receipt: {
+            case 3: {
                 return <Receipt />;
             }
             default: {

@@ -12,8 +12,7 @@
     transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
     transition-property: opacity, transform, visibility;
     visibility: hidden;
-    width: 100%;
-    max-width: 360px;
+    width: 360px;
     z-index: 3;
 }
 
@@ -86,7 +85,6 @@
     position: absolute;
     right: 0;
     top: 0;
-    overflow-y: auto;
 }
 
 .signIn_open {
@@ -99,12 +97,12 @@
     animation-name: slideout;
 }
 
-.form_open {
+.createAccount_open {
     composes: signIn;
     animation-name: slideinSide;
 }
 
-.form_closed {
+.createAccount_closed {
     composes: signIn;
     animation-name: slideoutSide;
 }

@@ -1,7 +1,6 @@
 import { RestApi } from '@magento/peregrine';
 import { Util } from '@magento/peregrine';
 import { removeGuestCart } from 'src/actions/cart';
-import { refresh } from 'src/util/router-helpers';
 
 const { request } = RestApi.Magento2;
 const { BrowserPersistence } = Util;
@@ -42,32 +41,19 @@ export const signIn = credentials =>
         }
     };
 
-export const signOut = ({ history }) => dispatch => {
-    setToken(null);
-
-    dispatch(actions.signIn.reset());
-
-    refresh({ history });
-};
-
 export const getUserDetails = () =>
     async function thunk(...args) {
         const [dispatch, getState] = args;
         const { user } = getState();
         if (user.isSignedIn) {
-            dispatch(actions.resetSignInError.request());
-            try {
-                const userDetails = await request('/rest/V1/customers/me', {
-                    method: 'GET'
-                });
-                dispatch(actions.signIn.receive(userDetails));
-            } catch (error) {
-                dispatch(actions.signInError.receive(error));
-            }
+            const userDetails = await request('/rest/V1/customers/me', {
+                method: 'GET'
+            });
+            dispatch(actions.signIn.receive(userDetails));
         }
     };
 
-export const createNewUserRequest = accountInfo =>
+export const createAccount = accountInfo =>
     async function thunk(...args) {
         const [dispatch] = args;
 
@@ -87,24 +73,8 @@ export const createNewUserRequest = accountInfo =>
             dispatch(assignGuestCartToCustomer());
         } catch (error) {
             dispatch(actions.createAccountError.receive(error));
-
-            /*
-             * Throw error again to notify async action which dispatched handleCreateAccount.
-             */
-            throw error;
         }
     };
-
-export const createAccount = accountInfo => async dispatch => {
-    /*
-     * Server validation error is handled in handleCreateAccount.
-     * We set createAccountError in Redux and throw error again
-     * to notify redux-thunk action which dispatched handleCreateAccount action.
-     */
-    try {
-        await dispatch(createNewUserRequest(accountInfo));
-    } catch (e) {}
-};
 
 export const assignGuestCartToCustomer = () =>
     async function thunk(...args) {

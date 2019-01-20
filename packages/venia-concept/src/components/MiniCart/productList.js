@@ -30,10 +30,8 @@ class ProductList extends Component {
             currencyCode,
             removeItemFromCart,
             showEditPanel,
-            totalsItems,
             ...otherProps
         } = this.props;
-
         return (
             <List
                 render="ul"
@@ -43,7 +41,6 @@ class ProductList extends Component {
                         currencyCode={currencyCode}
                         removeItemFromCart={removeItemFromCart}
                         showEditPanel={showEditPanel}
-                        totalsItems={totalsItems}
                         {...props}
                     />
                 )}

@@ -13,8 +13,6 @@ const { PWADevServer } = require('../');
 
 portscanner.findAPortNotInUse.mockResolvedValue(10001);
 
-beforeEach(() => playgroundMiddleware.mockReset());
-
 const simulate = {
     uniqueHostProvided(
         hostname = 'bork.bork.bork',
@@ -258,7 +256,7 @@ test('graphql-playground middleware attached with custom queryDirs', async () =>
     };
 
     const middleware = jest.fn();
-    playgroundMiddleware.mockReturnValue(middleware);
+    playgroundMiddleware.mockReturnValueOnce(middleware);
 
     const devServer = await PWADevServer.configure(config);
 

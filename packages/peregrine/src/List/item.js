@@ -11,7 +11,6 @@ class Item extends Component {
         hasFocus: PropTypes.bool,
         isSelected: PropTypes.bool,
         item: PropTypes.any.isRequired,
-        itemIndex: PropTypes.number.isRequired,
         render: PropTypes.oneOfType([PropTypes.func, PropTypes.string])
             .isRequired
     };
@@ -36,11 +35,10 @@ class Item extends Component {
             hasFocus,
             isSelected,
             item,
-            itemIndex,
             render,
             ...restProps
         } = this.props;
-        const customProps = { classes, hasFocus, isSelected, item, itemIndex };
+        const customProps = { classes, hasFocus, isSelected, item };
         const Root = fromRenderProp(render, Object.keys(customProps));
 
         return (

@@ -19,8 +19,7 @@ class SignIn extends Component {
         }),
 
         signInError: PropTypes.object,
-        signIn: PropTypes.func,
-        onForgotPassword: PropTypes.func.isRequired
+        signIn: PropTypes.func
     };
 
     state = {
@@ -58,18 +57,12 @@ class SignIn extends Component {
                         field="password"
                     />
                     <div className={classes.signInButton}>
-                        <Button priority="high" type="submit">
-                            Sign In
-                        </Button>
+                        <Button type="submit">Sign In</Button>
                     </div>
                     <div className={classes.signInError}>{errorMessage}</div>
-                    <button
-                        type="button"
-                        className={classes.forgotPassword}
-                        onClick={this.handleForgotPassword}
-                    >
-                        Forgot your username or password?
-                    </button>
+                    <div className={classes.forgotPassword}>
+                        <a href="/"> Forgot your username or password? </a>
+                    </div>
                 </Form>
                 <div className={classes.signInDivider} />
                 <div className={classes.showCreateAccountButton}>
@@ -90,11 +83,6 @@ class SignIn extends Component {
     showCreateAccountForm = () => {
         this.props.setDefaultUsername(this.state.username);
         this.props.showCreateAccountForm();
-    };
-
-    handleForgotPassword = () => {
-        this.props.setDefaultUsername(this.state.username);
-        this.props.onForgotPassword();
     };
 
     updatePassword = newPassword => {

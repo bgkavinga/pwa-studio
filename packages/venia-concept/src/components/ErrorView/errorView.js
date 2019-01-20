@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 
-import { loadingIndicator } from 'src/components/LoadingIndicator';
-
 const messages = new Map()
-    .set('loading', loadingIndicator)
+    .set('loading', 'Loading...')
     .set('notFound', '404 Not Found')
     .set('internalError', '500 Internal Server Error');
 

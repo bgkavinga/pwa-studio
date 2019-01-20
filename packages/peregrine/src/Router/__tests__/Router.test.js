@@ -1,8 +1,11 @@
 import React from 'react';
-import { mount, shallow } from 'enzyme';
+import { configure, mount, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 import { MemoryRouter } from 'react-router-dom';
 
 import MagentoRouter, { Consumer as RouteConsumer } from '../Router';
+
+configure({ adapter: new Adapter() });
 
 const apiBase = 'https://store.com';
 

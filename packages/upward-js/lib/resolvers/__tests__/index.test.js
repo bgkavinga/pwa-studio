@@ -8,13 +8,15 @@ test('Resolvers exports', () => {
             AbstractResolver.prototype.isPrototypeOf(resolver.prototype)
         )
     ).toBeTruthy();
-    expect(ResolversByType).toMatchObject({
-        conditional: expect.any(Function),
-        directory: expect.any(Function),
-        file: expect.any(Function),
-        inline: expect.any(Function),
-        proxy: expect.any(Function),
-        service: expect.any(Function),
-        template: expect.any(Function)
-    });
+    expect(ResolversByType).toMatchInlineSnapshot(`
+Object {
+  "conditional": [Function],
+  "directory": [Function],
+  "file": [Function],
+  "inline": [Function],
+  "proxy": [Function],
+  "service": [Function],
+  "template": [Function],
+}
+`);
 });

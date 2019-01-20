@@ -2,7 +2,7 @@
     position: relative;
     align-content: start;
     display: grid;
-    grid-gap: 0 1rem;
+    grid-gap: 0.375rem 1rem;
     grid-template-areas:
         'image name'
         'image options'
@@ -50,28 +50,31 @@
 }
 
 .options {
+    display: grid;
     font-size: 13px;
     grid-area: options;
+    grid-auto-rows: min-content;
+    grid-gap: 0 0.5rem;
+    grid-template-columns: min-content 1fr;
+    justify-items: start;
     line-height: 1.5;
-    margin-top: 0.25rem;
-    max-height: 54px;
-    overflow-y: auto;
+    margin: 0;
 }
 
-.quantityRow {
-    align-items: center;
+.optionName {
+    color: rgb(var(--venia-text-alt));
+    grid-column: 1 / span 1;
 }
 
-.optionLabel {
-    display: inline-block;
+.optionValue {
+    grid-column: 2 / span 1;
 }
 
 .quantity {
-    align-items: flex-end;
+    align-items: center;
     display: flex;
     grid-column: 2 / span 1;
     font-size: 13px;
-    align-self: end;
 }
 
 .quantityOperator {
@@ -79,12 +82,6 @@
     color: rgb(var(--venia-text-alt));
     display: inline-flex;
     margin: 0 0.375rem;
-}
-
-.quantitySelect {
-    background: transparent;
-    width: 3.125rem;
-    padding: 0.3125rem;
 }
 
 .price {
@@ -101,4 +98,7 @@
     background-color: rgb(var(--venia-teal));
     opacity: 0.1;
     z-index: 2;
+}
+
+.subMenu {
 }

@@ -34,7 +34,7 @@ class Main extends Component {
         return (
             <main className={classes.root}>
                 <Header />
-                <div className={classes.page}>{children}</div>
+                <article className={classes.page}>{children}</article>
                 <Footer />
             </main>
         );

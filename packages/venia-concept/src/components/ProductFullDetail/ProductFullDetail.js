@@ -1,11 +1,9 @@
 import React, { Component, Suspense } from 'react';
 import { arrayOf, bool, func, number, shape, string } from 'prop-types';
-import { Form } from 'informed';
 import { Price } from '@magento/peregrine';
 
 import classify from 'src/classify';
 import Button from 'src/components/Button';
-import { loadingIndicator } from 'src/components/LoadingIndicator';
 import Carousel from 'src/components/ProductImageCarousel';
 import Quantity from 'src/components/ProductQuantity';
 import RichText from 'src/components/RichText';
@@ -133,7 +131,7 @@ class ProductFullDetail extends Component {
     };
 
     get fallback() {
-        return loadingIndicator;
+        return <div>Loading...</div>;
     }
 
     get productOptions() {
@@ -161,7 +159,7 @@ class ProductFullDetail extends Component {
         const { regularPrice } = product.price;
 
         return (
-            <Form className={classes.root}>
+            <article className={classes.root}>
                 <section className={classes.title}>
                     <h1 className={classes.productName}>
                         <span>{product.name}</span>
@@ -182,12 +180,12 @@ class ProductFullDetail extends Component {
                         <span>Quantity</span>
                     </h2>
                     <Quantity
-                        initialValue={this.state.quantity}
-                        onValueChange={this.setQuantity}
+                        value={this.state.quantity}
+                        onChange={this.setQuantity}
                     />
                 </section>
                 <section className={classes.cartActions}>
-                    <Button priority="high" onClick={this.addToCart}>
+                    <Button onClick={this.addToCart}>
                         <span>Add to Cart</span>
                     </Button>
                 </section>
@@ -203,7 +201,7 @@ class ProductFullDetail extends Component {
                     </h2>
                     <strong>{product.sku}</strong>
                 </section>
-            </Form>
+            </article>
         );
     }
 }

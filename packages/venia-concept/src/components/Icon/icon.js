@@ -1,38 +1,23 @@
 import React, { Component } from 'react';
-import { func, number, object, oneOfType, shape, string } from 'prop-types';
+import Feather from 'feather-icons';
+import PropTypes from 'prop-types';
 
 import classify from 'src/classify';
 import defaultClasses from './icon.css';
 
-/**
- * The Icon component allows us to wrap each icon with some default styling.
- */
 class Icon extends Component {
     static propTypes = {
-        classes: shape({
-            root: string
-        }),
-        size: number,
-        attrs: object,
-        src: oneOfType([func, shape({ render: func.isRequired })]).isRequired
+        classes: PropTypes.shape({
+            root: PropTypes.string
+        })
     };
 
     render() {
-        const {
-            attrs: { width, ...restAttrs } = {},
-            size,
-            classes,
-            src: IconComponent
-        } = this.props;
+        const { attrs, classes, name } = this.props;
+        const svg = Feather.icons[name].toSvg(attrs);
+        const fn = () => ({ __html: svg });
 
-        // Permit both prop styles:
-        // <Icon src={Foo} attrs={{ width: 18 }} />
-        // <Icon src={Foo} size={18} />
-        return (
-            <span className={classes.root}>
-                <IconComponent size={size || width} {...restAttrs} />
-            </span>
-        );
+        return <span className={classes.root} dangerouslySetInnerHTML={fn()} />;
     }
 }
 

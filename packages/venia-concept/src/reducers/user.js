@@ -9,10 +9,8 @@ import actions from 'src/actions/user';
 
 export const name = 'user';
 
-const isSignedIn = () => !!storage.getItem('signin_token');
-
 const initialState = {
-    isSignedIn: isSignedIn(),
+    isSignedIn: !!storage.getItem('signin_token'),
     currentUser: {
         email: '',
         firstname: '',
@@ -57,12 +55,6 @@ const reducerMap = {
         return {
             ...state,
             createAccountError: {}
-        };
-    },
-    [actions.signIn.reset]: () => {
-        return {
-            ...initialState,
-            isSignedIn: isSignedIn()
         };
     }
 };
